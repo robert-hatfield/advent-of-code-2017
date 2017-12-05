@@ -32,3 +32,57 @@ func calculateChecksumFor(_ input:[String]) -> Int {
 let testInput1 = ["5    1    9    5", "7    5    3", "2    4    6    8"]
 calculateChecksumFor(testInput1) == 18
 calculateChecksumFor(input)
+
+/*
+ Your puzzle answer was 47623.
+ 
+ The first half of this puzzle is complete! It provides one gold star: *
+ */
+
+/*
+ --- Part Two ---
+ 
+ "Great work; looks like we're on the right track after all. Here's a star for your effort." However, the program seems a little worried. Can programs be worried?
+ 
+ "Based on what we're seeing, it looks like all the User wanted is some information about the evenly divisible values in the spreadsheet. Unfortunately, none of us are equipped for that kind of calculation - most of us specialize in bitwise operations."
+ 
+ It sounds like the goal is to find the only two numbers in each row where one evenly divides the other - that is, where the result of the division operation is a whole number. They would like you to find those numbers on each line, divide them, and add up each line's result.
+ 
+ For example, given the following spreadsheet:
+ 
+ 5 9 2 8
+ 9 4 7 3
+ 3 8 6 5
+ In the first row, the only two numbers that evenly divide are 8 and 2; the result of this division is 4.
+ In the second row, the two numbers are 9 and 3; the result is 3.
+ In the third row, the result is 2.
+ In this example, the sum of the results would be 4 + 3 + 2 = 9.
+ 
+ What is the sum of each row's result in your puzzle input?
+ */
+
+let test2input = ["5    9    2    8", "9    4    7    3", "3    8    6    5"]
+
+func calculateDivisibleChecksum(input: [String]) -> Int {
+    var result = 0
+    
+    // Change each string into an array of integers
+    let numericInput = input.map({$0.components(separatedBy: " ").flatMap({Int($0)})})
+
+    for row in numericInput {
+        divisible: for i in 0...row.count - 2 {
+            for j in i+1...row.count - 1 {
+                let a = row[i], b = row[j]
+                if (a % b == 0 || b % a == 0) {
+                    result += max(a/b, b/a)
+                    break divisible // Stop checking the row if a match is found
+                }
+            }
+        }
+    }
+    return result
+}
+
+calculateDivisibleChecksum(input: test2input) == 9
+calculateDivisibleChecksum(input: input)
+
