@@ -536,6 +536,32 @@ struct Input {
 
 let input = Input().data
 
-print(type(of: input)); print(input[0])
+let passphrase = input[0]
 
+func passphraseIsValid(input: String) -> Bool {
+    let passphraseArray = input.components(separatedBy: " ") // Build an array of words in the passphrase
+    let passphraseSet = Set(passphraseArray) // Build a set from the elements of the array; duplicate records are not added to the set
+    
+    return passphraseArray.count == passphraseSet.count // Return TRUE if counts match; if there is a mismatch, it is because one or more words are duplicated.
+}
 
+// Tests
+let testInput1 = "aa bb cc dd ee", testInput2 = "aa bb cc dd aa", testInput3 = "aa bb cc dd aaa"
+passphraseIsValid(input: testInput1) == true
+passphraseIsValid(input: testInput2) == false
+passphraseIsValid(input: testInput3) == true
+
+func countValidPassphrases(allInput: [String]) -> Int {
+    var result = 0
+    
+    for passphrase in allInput {
+        if passphraseIsValid(input: passphrase) {
+            result += 1
+        }
+    }
+
+    return result
+}
+
+countValidPassphrases(allInput: [testInput1, testInput2, testInput3]) == 2
+countValidPassphrases(allInput: input)
