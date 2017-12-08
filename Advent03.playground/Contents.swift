@@ -35,7 +35,7 @@ let input = 277678
 // Define memory object & nodes as a modified linked list.
 public class MemoryNode<T> {
     var value: T
-    var neighbor: MemoryNode?
+    weak var neighbor: MemoryNode?
     
     public init(value:T) {
         self.value = value
@@ -43,38 +43,103 @@ public class MemoryNode<T> {
 }
 
 public class SpiralMemory<T> {
-    public typealias Node = MemoryNode<T>
     
-    private var head: Node?
+    public typealias Node = MemoryNode<T?>
+    
+    private var _count: Int
+    
+    private var _capacity: Int
+    
+    private var center: (Int, Int)
+    
+    public var capacity: Int {
+        return _capacity
+    }
     
     public var isEmpty: Bool {
-        return head == nil
+        return _count == 0
     }
     
-    public var first: Node? {
-        return head
+    public var data: [[Node]]
+    
+    public init(elements: Int) {
+        _count = 0
+        let squareSize = Int(Float(elements).squareRoot().rounded(.up))
+        self._capacity = squareSize * squareSize
+        
+        var twoDimArray = [[Node]]()
+        for _ in 1...squareSize {
+            var row = [Node]()
+            for _ in 1...squareSize {
+                row.append(Node(value: nil))
+            }
+            twoDimArray.append(row)
+        }
+        self.data = twoDimArray
+        
+        print("Initialized: A \(squareSize) x \(squareSize) array was created.")
+        
+        let center: Int
+        if squareSize % 2 == 0 { center = squareSize / 2 - 1 } else { center = squareSize / 2 }
+        
+        self.center = (center, center)
+        print("Output port located at: \(self.center)")
     }
+    
+    public func printData() {
+        print("Data:")
+        for row in self.data {
+            print("\t", terminator:"")
+            for element in row {
+                print(element.value ?? "nil", terminator:"\t")
+            }
+            print("")
+        }
+    }
+    
+    public func accessCell(_ cell:Int) -> T? {
+        let spiralSize = Int(Float(cell).squareRoot().rounded(.up))
+        let upperBound = spiralSize * spiralSize
+        let lowerBound = (spiralSize - 1) * (spiralSize - 1)
+        print("Accessing [\(cell)]:\n Spiral size: \(spiralSize)\n Bounds: \(lowerBound) - \(upperBound)")
+        return data[0][0].value ?? nil
+    }
+    
+    public func set(cell: Int, to newData: T) {
+        data[0][0].value = newData
+    }
+    
+    public func set(x: Int, y: Int, to newData: T) {
+//        data[x][y] = newData
+    }
+    
+    public func display(_ x: Int, _ y: Int) -> T? {
+        
+        if let value = data[x][y].value {
+            return value
+        } else {
+            return nil
+        }
+    }
+    
+    public func retrieve(_ cell:Int) -> Int? {
+        if cell > self.capacity { return nil }
+        return 0
+    }
+
 }
 
-let list = SpiralMemory<String>()
-list.isEmpty
-list.first
-
-
-func retrieve(_ input: Int) -> Int? {
-    var result = 0
-    
-    // Figure out length of operation here
-    
-    return result
-}
+let testSpiral = SpiralMemory<String>(elements: 22)
+testSpiral.capacity
+testSpiral.set(cell: 0, to: "Hello")
+testSpiral.printData()
+testSpiral.accessCell(22)
 
 // Tests
-retrieve(1) == 0
-retrieve(12) == 3
-retrieve(23) == 2
-retrieve(1024) == 31
+testSpiral.retrieve(1) == 0
+testSpiral.retrieve(12) == 3
+testSpiral.retrieve(23) == 2
+testSpiral.retrieve(1024) == 31
 
-
-
-
+//let puzzleSpiral = AnotherSpiral<Int>(elements: 277678)
+//puzzleSpiral.capacity
