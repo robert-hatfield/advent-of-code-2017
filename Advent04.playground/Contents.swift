@@ -18,6 +18,28 @@ import PlaygroundSupport
  The system's full passphrase list is available as your puzzle input. How many passphrases are valid?
  */
 
+
+func passphraseIsValid(input: String) -> Bool {
+    // Build an array of words in the passphrase
+    let passphraseArray = input.components(separatedBy: " ")
+    // Build a set from the elements of the array; duplicate records are not added to the set
+    let passphraseSet = Set(passphraseArray)
+    
+    // Returns TRUE if counts match; if there is a mismatch, it is because one or more words are duplicated.
+    return passphraseArray.count == passphraseSet.count
+}
+
+func countValidPassphrases(allInput: [String]) -> Int {
+    var result = 0
+    
+    for passphrase in allInput {
+        if passphraseIsValid(input: passphrase) {
+            result += 1
+        }
+    }
+    return result
+}
+
 // Keep input in a struct so I can "fold" it; 500+ lines of strings is annoying.
 struct Input {
     let data = ["bdwdjjo avricm cjbmj ran lmfsom ivsof",
@@ -533,35 +555,77 @@ struct Input {
                 "hwcy ujdun bjjuvd jbdvju onnk xeyy mmp onkn qyzl",
                 "jwfm ptjwrbl hhuv uolz adyweh qpj wxyogp igvnojq jmfw pqs fsnirby"]
 }
-
 let input = Input().data
 
-let passphrase = input[0]
+// Tests
+let test1a = "aa bb cc dd ee",
+    test1b = "aa bb cc dd aa",
+    test1c = "aa bb cc dd aaa"
+passphraseIsValid(input: test1a) == true
+passphraseIsValid(input: test1b) == false
+passphraseIsValid(input: test1c) == true
+countValidPassphrases(allInput: [test1a, test1b, test1c]) == 2
 
-func passphraseIsValid(input: String) -> Bool {
-    let passphraseArray = input.components(separatedBy: " ") // Build an array of words in the passphrase
-    let passphraseSet = Set(passphraseArray) // Build a set from the elements of the array; duplicate records are not added to the set
+countValidPassphrases(allInput: input)
+
+/*
+ Your puzzle answer was 455.
+ 
+ The first half of this puzzle is complete! It provides one gold star: *
+ */
+
+/*
+ --- Part Two ---
+ 
+ For added security, yet another system policy has been put in place. Now, a valid passphrase must contain no two words that are anagrams of each other - that is, a passphrase is invalid if any word's letters can be rearranged to form any other word in the passphrase.
+ 
+ For example:
+ 
+ abcde fghij is a valid passphrase.
+ abcde xyz ecdab is not valid - the letters from the third word can be rearranged to form the first word.
+ a ab abc abd abf abj is a valid passphrase, because all letters need to be used when forming another word.
+ iiii oiii ooii oooi oooo is valid.
+ oiii ioii iioi iiio is not valid - any of these words can be rearranged to form any other word.
+ Under this new system policy, how many passphrases are valid?
+ */
+
+func anagramTestPasses(for input: String) -> Bool {
     
-    return passphraseArray.count == passphraseSet.count // Return TRUE if counts match; if there is a mismatch, it is because one or more words are duplicated.
+    // Build an array of words in the passphrase
+    var passphraseArray = input.components(separatedBy: " ")
+    
+    // Sort characters in each word of the passphrase
+    passphraseArray = passphraseArray.map({String($0.sorted())})
+
+    let phraseSet = Set(passphraseArray)
+    return passphraseArray.count == phraseSet.count
 }
 
-// Tests
-let testInput1 = "aa bb cc dd ee", testInput2 = "aa bb cc dd aa", testInput3 = "aa bb cc dd aaa"
-passphraseIsValid(input: testInput1) == true
-passphraseIsValid(input: testInput2) == false
-passphraseIsValid(input: testInput3) == true
-
-func countValidPassphrases(allInput: [String]) -> Int {
+func countAnagramPasses(input: [String]) -> Int {
     var result = 0
     
-    for passphrase in allInput {
-        if passphraseIsValid(input: passphrase) {
-            result += 1
-        }
+    for passphrase in input {
+        if anagramTestPasses(for: passphrase) { result += 1 }
     }
-
+    
     return result
 }
 
-countValidPassphrases(allInput: [testInput1, testInput2, testInput3]) == 2
-countValidPassphrases(allInput: input)
+let testString = "abcaf"
+let sorted = testString.sorted()
+let stringified = String(testString.lazy.sorted())
+
+// Tests
+let test2a = "abcde fghij",
+    test2b = "abcde xyz ecdab",
+    test2c = "a ab abc abd abf abj",
+    test2d = "iiii oiii ooii oooi oooo",
+    test2e = "oiii ioii iioi iiio"
+
+anagramTestPasses(for: test2a) == true
+anagramTestPasses(for: test2b) == false
+anagramTestPasses(for: test2c) == true
+anagramTestPasses(for: test2d) == true
+anagramTestPasses(for: test2e) == false
+
+countAnagramPasses(input: input)
