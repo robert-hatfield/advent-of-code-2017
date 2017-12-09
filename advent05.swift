@@ -1,6 +1,6 @@
 //: Playground - noun: a place where people can play
 
-import UIKit
+import Foundation
 
 struct puzzleInput {
     let data = [2,
@@ -1132,7 +1132,6 @@ struct puzzleInput {
  */
 
 let puzzleData = puzzleInput().data
-print(type(of: puzzleData))
 
 func exitJumpInstructions(input: [Int]) -> Int {
     var mutableInput = input    // Modify offset as we process the list
@@ -1150,11 +1149,47 @@ func exitJumpInstructions(input: [Int]) -> Int {
 }
 
 // Test:
-exitJumpInstructions(input: [0, 3, 0, 1, -3]) == 5
-
-exitJumpInstructions(input: puzzleData)
+print("Part 1:")
+print("  Test passes: \(exitJumpInstructions(input: [0, 3, 0, 1, -3]) == 5)")
+print("  Data result: \(exitJumpInstructions(input: puzzleData))")
 
 /* Your puzzle answer was 396086.
  
  The first half of this puzzle is complete! It provides one gold star: *
  */
+
+/*    --- Part Two ---
+ 
+ Now, the jumps are even stranger: after each jump, if the offset was three or more, instead decrease it by 1. Otherwise, increase it by 1 as before.
+ 
+ Using this rule with the above example, the process now takes 10 steps, and the offset values after finding the exit are left as 2 3 2 3 -1.
+ 
+ How many steps does it now take to reach the exit?
+ */
+
+func revisedJumpInstructions(input: [Int]) -> Int {
+    var mutableInput = input    // Modify offset as we process the list
+    var steps = 0               // Accumulator
+    var currentIndex = 0        // Index of jump instruction being evaluated
+    
+    while currentIndex < input.count {
+        let nextIndex = currentIndex + mutableInput[currentIndex]   // Determine next instruction index
+        
+        switch mutableInput[currentIndex] >= 3 {
+        case true:
+            mutableInput[currentIndex] -= 1
+        default:
+            mutableInput[currentIndex] += 1
+        }
+        currentIndex = nextIndex                                    // Update to the next index
+        steps += 1
+    }
+    
+    return steps
+}
+
+// Test:
+print("Part 2:")
+print(" Test passes: \(revisedJumpInstructions(input: [0,3,0,1,-3]) == 10)")
+print(" Data result: \(revisedJumpInstructions(input: puzzleData))")
+// Result = 28675390
