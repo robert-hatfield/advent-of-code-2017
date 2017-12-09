@@ -1138,7 +1138,7 @@ func exitJumpInstructions(input: [Int]) -> Int {
     var steps = 0               // Accumulator
     var currentIndex = 0        // Index of jump instruction being evaluated
     
-    while currentIndex < input.count {
+    while (0 <= currentIndex) && (currentIndex < input.count) {
         let nextIndex = currentIndex + mutableInput[currentIndex]   // Determine next instruction index
         mutableInput[currentIndex] += 1                             // Increment before jumping
         currentIndex = nextIndex                                    // Update to the next index
@@ -1172,7 +1172,7 @@ func revisedJumpInstructions(input: [Int]) -> Int {
     var steps = 0               // Accumulator
     var currentIndex = 0        // Index of jump instruction being evaluated
     
-    while currentIndex < input.count {
+    while (0 <= currentIndex) && (currentIndex < input.count) {
         let nextIndex = currentIndex + mutableInput[currentIndex]   // Determine next instruction index
         
         switch mutableInput[currentIndex] >= 3 {
